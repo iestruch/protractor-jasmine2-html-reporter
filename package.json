@@ -1,35 +1,31 @@
 {
-  "name": "protractor-jasmine2-html-reporter",
-  "version": "0.0.5",
-  "description": "HTML reporter for Jasmine2 and Protractor",
+  "name": "protractor-html-hierarchical-reporter",
+  "version": "1.0.0",
+  "description": "protractor jasmine hierarchical html reporter",
   "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {},
+  "devDependencies": {},
   "scripts": {
-    "test": "protractor protractor.config.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/Kenzitron/protractor-jasmine2-html-reporter"
+    "url": "git+https://github.com/LeraKruchek/protractor-jasmine2-html-reporter.git"
   },
   "keywords": [
-    "jasmine2",
     "protractor",
-    "reporter",
-    "html",
-    "test",
-    "functional testing",
-    "screenshots",
-    "end2end",
-    "bdd"
+    "jasmine",
+    "report",
+    "testing",
+    "functional"
   ],
-  "author": "Alejandro Asensio <alejandro@kenzilab.com> (http://www.kenzilab.com/)",
-  "license": "BSD-2-Clause",
+  "author": "",
+  "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Kenzitron/protractor-jasmine2-html-reporter/issues"
+    "url": "https://github.com/LeraKruchek/protractor-jasmine2-html-reporter/issues"
   },
-  "dependencies": {
-    "hat": "0.0.3",
-    "lodash": "^3.0.0",
-    "mkdirp": "^0.5.0",
-    "string.prototype.startswith": "^0.2.0"
-  }
+  "homepage": "https://github.com/LeraKruchek/protractor-jasmine2-html-reporter#readme"
 }
