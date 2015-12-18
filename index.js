@@ -14,6 +14,8 @@ var allStats = {
     skipped: 0,
     failures: 0
 };
+var successColor = '#f7fff5';
+var failColor = '#fff5f6';
 
 function trim(str) { return str.replace(/^\s+/, "").replace(/\s+$/, ""); }
 function elapsed(start, end) { return (end - start) / 1000; }
@@ -196,11 +198,12 @@ function HierarchicalHTMLReporter(options) {
         }
         // if we have anything to write here, write out the consolidated file
         if (output) {
-
+            var failuresClass = getFailureClass(allStats.failures);
             output =
-                '<h3>' + ' Tests: ' + allStats.tests + ' Skipped: ' + allStats.skipped + ' Failures: ' + allStats.failures +
-                '</h3>' +
-                '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">' + output + '</div>';
+                '<h3>' + ' Tests: ' + allStats.tests + ' Skipped: ' + allStats.skipped + ' <span class="' +
+                failuresClass + '">Failures: ' + allStats.failures + '</span></h3>' +
+                '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">' + output +
+                '</div>';
             wrapOutputAndWriteFile(self.filePrefix, output);
         }
         //log("Specs skipped but not reported (entire suite skipped or targeted to specific specs)", totalSpecsDefined -
@@ -214,6 +217,10 @@ function HierarchicalHTMLReporter(options) {
     /******** Helper functions with closure access for simplicity ********/
     function generateFilename(suite) {
         return self.filePrefix + getFullyQualifiedSuiteName(suite, true) + '.html';
+    }
+
+    function getFailureClass(fails) {
+        return  fails ? 'bg-danger' : 'bg-success';
     }
 
     function getFullyQualifiedSuiteName(suite, isFilename) {
@@ -260,11 +267,12 @@ function HierarchicalHTMLReporter(options) {
         };
 
         currentIndex++;
-        var suiteNameAndTime = getFullyQualifiedSuiteName(suite) + ' - ' + elapsed(suite._startTime, suite._endTime) + 's';
+        var suiteNameAndTime = getFullyQualifiedSuiteName(suite) + ' - ' + elapsed(suite._startTime, suite._endTime) +
+                               's';
         var collapse = 'collapse' + currentIndex;
-
         getMainSuitStatistics(suite, statObj);
 
+        var failureClass = getFailureClass(statObj.failures);
         Object.keys(allStats).forEach(function(key) {
             allStats[key] += statObj[key];
         });
@@ -275,8 +283,8 @@ function HierarchicalHTMLReporter(options) {
                 '<a role="button" data-toggle="collapse" data-parent="#accordion" ' +
                 'href="#' + collapse + '"aria-expanded="false"  aria-controls="' + collapse + '">' +
                 suiteNameAndTime + '<br>' +
-                'Tests: ' + statObj.tests + ' Skipped: ' + statObj.skipped + ' Failures: ' + statObj.failures +
-                '</a></h4></div>' +
+                'Tests: ' + statObj.tests + ' Skipped: ' + statObj.skipped + ' <span class="' + failureClass + '">Failures: ' + statObj.failures +
+                '</span></a></h4></div>' +
                 '<div id="' + collapse +
                 '" class="panel-collapse collapse" role="tabpanel" "aria-expanded="false" style="height: 0px;" aria-labelledby="headingOne">';
 
@@ -286,11 +294,14 @@ function HierarchicalHTMLReporter(options) {
             if (secSuite._suites && secSuite._suites.length) {
                 secSuite._suites.forEach(function(suite, ind) {
                     var collapseId = Date.now() + ind + Math.floor(Math.random() * 10000);
-                    var nameAndTime = getFullyQualifiedSuiteName(suite) + ' - ' + elapsed(suite._startTime, suite._endTime) + 's';
+                    var nameAndTime = getFullyQualifiedSuiteName(suite) + ' - ' +
+                                      elapsed(suite._startTime, suite._endTime) + 's';
+                    var bgColor = suite._failures ? failColor : successColor;
                     if (suite._specs && suite._specs.length) {
                         html += '<div class="panel panel-default">';
                         html +=
-                            '<div class="panel-heading" style="background-color: #f5faff;" role="tab" id="' + 'head' + collapseId +
+                            '<div class="panel-heading" style="background-color: ' + bgColor + ';" role="tab" id="' + 'head' +
+                            collapseId +
                             '"><h4 class="panel-title">';
                         html += '<a class="" role="button" data-toggle="collapse" href="#' + collapseId +
                                 '" aria-expanded="false" aria-controls="' + collapseId + '">';
@@ -332,7 +343,8 @@ function HierarchicalHTMLReporter(options) {
         var num_tests = spec.failedExpectations.length + spec.passedExpectations.length;
         var percentage = (spec.passedExpectations.length * 100) / num_tests;
         html +=
-            '<span>Tests passed: ' + parseDecimalRoundAndFixed(percentage, 2) + '%</span><br /><progress max="100" value="' +
+            '<span>Tests passed: ' + parseDecimalRoundAndFixed(percentage, 2) +
+            '%</span><br /><progress max="100" value="' +
             Math.round(percentage) + '"></progress>';
         html += '</div>';
         html += '</li>';
@@ -344,7 +356,8 @@ function HierarchicalHTMLReporter(options) {
 
         var html = '<div class="description">';
         html +=
-            '<h4>' + escapeInvalidHtmlChars(spec.description) + ' - ' + elapsed(spec._startTime, spec._endTime) + 's</h4>';
+            '<h4>' + escapeInvalidHtmlChars(spec.description) + ' - ' + elapsed(spec._startTime, spec._endTime) +
+            's</h4>';
 
         if (spec.failedExpectations.length > 0 || spec.passedExpectations.length > 0) {
             html += '<ul>';
