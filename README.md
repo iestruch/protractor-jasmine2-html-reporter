@@ -29,7 +29,7 @@ Output directory for created files. All screenshots and reports will be stored h
 
 If the directory doesn't exist, it will be created automatically or otherwise cleaned before running the test suite.
 
-<pre><code>jasmine.getEnv().addReporter(new Jasmine2HtmlReporter({
+<pre><code>jasmine.getEnv().addReporter(new HierarchicalHTMLReporter({
    savePath: './test/reports/'
 }));</code></pre>
 
@@ -41,7 +41,7 @@ By default the screenshots are stored in a folder inside the default path
 
 If the directory doesn't exist, it will be created automatically or otherwise cleaned before running the test suite.
 
-<pre><code>jasmine.getEnv().addReporter(new Jasmine2HtmlReporter({
+<pre><code>jasmine.getEnv().addReporter(new HierarchicalHTMLReporter({
    savePath: './test/reports/',
    screenshotsFolder: 'images'
 }));</code></pre>
@@ -52,7 +52,7 @@ Default folder: <code>screenshots</code>
 
 When this option is enabled, reporter will create screenshots for specs.
 
-<pre><code>jasmine.getEnv().addReporter(new Jasmine2HtmlReporter({
+<pre><code>jasmine.getEnv().addReporter(new HierarchicalHTMLReporter({
    takeScreenshots: false
 }));</code></pre>
 
@@ -63,7 +63,7 @@ Default is <code>true</code>
 This option allows you to choose if create screenshots always or only when failures.
 If you disable screenshots, obviously this option will not be taken into account.
 
-<pre><code>jasmine.getEnv().addReporter(new Jasmine2HtmlReporter({
+<pre><code>jasmine.getEnv().addReporter(new HierarchicalHTMLReporter({
    takeScreenshots: true,
    takeScreenshotsOnlyOnFailures: true
 }));</code></pre>
@@ -74,7 +74,7 @@ Default is <code>false</code> (So screenshots are always generated)
 
 Filename for html report.
 
-<pre><code>jasmine.getEnv().addReporter(new Jasmine2HtmlReporter({
+<pre><code>jasmine.getEnv().addReporter(new HierarchicalHTMLReporter({
    savePath: './test/reports/',
    filePrefix: 'index'
 }));</code></pre>
