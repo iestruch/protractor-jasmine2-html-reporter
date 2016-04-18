@@ -15,7 +15,27 @@ var allStats = {
     failures: 0
 };
 var successColor = '#f7fff5';
-var failColor = '#fff5f6';
+var failColor = '#ffcdd2';
+var successClass = 'js-success';
+var failClass = 'js-fail';
+
+function checkboxHandling() {
+
+    var checkbox = document.querySelector('#showOnlyFailed');
+
+    function checkboxChangeHandler() {
+        var showOnlyFailed = checkbox.checked;
+        var successElements = document.querySelectorAll('.js-success');
+        var len = successElements.length;
+
+        for (var i = 0; i < len; i++) {
+            successElements[i].style.display = showOnlyFailed ? 'none' : 'block';
+        }
+    }
+
+    checkboxChangeHandler();
+    document.querySelector('#showOnlyFailed').addEventListener('change', checkboxChangeHandler);
+}
 
 function trim(str) { return str.replace(/^\s+/, "").replace(/\s+$/, ""); }
 function elapsed(start, end) { return (end - start) / 1000; }
@@ -71,7 +91,7 @@ function rmdir(dir) {
         }
         fs.rmdirSync(dir);
     } catch (e) { log("problem trying to remove a folder"); }
-};
+}
 
 function HierarchicalHTMLReporter(options) {
 
@@ -81,6 +101,8 @@ function HierarchicalHTMLReporter(options) {
     self.finished = false;
     // sanitize arguments
     options = options || {};
+    self.showOnlyFailedByDefault =
+        options.showOnlyFailedByDefault === UNDEFINED ? false : options.showOnlyFailedByDefault;
     self.takeScreenshots = options.takeScreenshots === UNDEFINED ? true : options.takeScreenshots;
     self.savePath = options.savePath || '';
     self.takeScreenshotsOnlyOnFailures =
@@ -201,7 +223,11 @@ function HierarchicalHTMLReporter(options) {
             var failuresClass = getFailureClass(allStats.failures);
             output =
                 '<h3>' + ' Tests: ' + allStats.tests + ' Skipped: ' + allStats.skipped + ' <span class="' +
-                failuresClass + '">Failures: ' + allStats.failures + '</span></h3>' +
+                failuresClass + '">Failures: ' + allStats.failures + '</span>' +
+                '<div style="float: right;">Show only failed tests<input type="checkbox" id="showOnlyFailed" name="showOnlyFailed" checked="' +
+                self.showOnlyFailedByDefault + '" style="margin: 10px;' +
+                'transform: scale(1.5); -webkit-transform: scale(1.5);"></div>' +
+                '</h3>' +
                 '<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">' + output +
                 '</div>';
             wrapOutputAndWriteFile(self.filePrefix, output);
@@ -220,7 +246,15 @@ function HierarchicalHTMLReporter(options) {
     }
 
     function getFailureClass(fails) {
-        return  fails ? 'bg-danger' : 'bg-success';
+        var result = {};
+        if (fails) {
+            result.color = 'bg-danger';
+            result.class = failClass;
+        } else {
+            result.color = 'bg-success';
+            result.class = successClass;
+        }
+        return result;
     }
 
     function getFullyQualifiedSuiteName(suite, isFilename) {
@@ -272,18 +306,19 @@ function HierarchicalHTMLReporter(options) {
         var collapse = 'collapse' + currentIndex;
         getMainSuitStatistics(suite, statObj);
 
-        var failureClass = getFailureClass(statObj.failures);
+        var resultObj = getFailureClass(statObj.failures);
         Object.keys(allStats).forEach(function(key) {
             allStats[key] += statObj[key];
         });
 
-        html += '<div class="panel panel-default">' +
+        html += '<div class="panel panel-default ' + resultObj.class + '">' +
                 '<div class="panel-heading" style="background-color: #d0e2f0;" role="tab" id="headingOne">' +
                 '<h4 class="panel-title">' +
                 '<a role="button" data-toggle="collapse" data-parent="#accordion" ' +
                 'href="#' + collapse + '"aria-expanded="false"  aria-controls="' + collapse + '">' +
                 suiteNameAndTime + '<br>' +
-                'Tests: ' + statObj.tests + ' Skipped: ' + statObj.skipped + ' <span class="' + failureClass + '">Failures: ' + statObj.failures +
+                'Tests: ' + statObj.tests + ' Skipped: ' + statObj.skipped + ' <span class="' + resultObj.color +
+                '">Failures: ' + statObj.failures +
                 '</span></a></h4></div>' +
                 '<div id="' + collapse +
                 '" class="panel-collapse collapse" role="tabpanel" "aria-expanded="false" style="height: 0px;" aria-labelledby="headingOne">';
@@ -296,9 +331,19 @@ function HierarchicalHTMLReporter(options) {
                     var collapseId = Date.now() + ind + Math.floor(Math.random() * 10000);
                     var nameAndTime = getFullyQualifiedSuiteName(suite) + ' - ' +
                                       elapsed(suite._startTime, suite._endTime) + 's';
-                    var bgColor = suite._failures ? failColor : successColor;
+                    var bgColor;
+                    var resultClass;
+
+                    if (suite._failures) {
+                        bgColor = failColor;
+                        resultClass = failClass;
+                    } else {
+                        bgColor = successColor;
+                        resultClass = successClass;
+                    }
+
                     if (suite._specs && suite._specs.length) {
-                        html += '<div class="panel panel-default">';
+                        html += '<div class="panel panel-default ' + resultClass + '">';
                         html +=
                             '<div class="panel-heading" style="background-color: ' + bgColor + ';" role="tab" id="' + 'head' +
                             collapseId +
@@ -430,6 +475,7 @@ function HierarchicalHTMLReporter(options) {
                  '<head lang=en><meta charset=UTF-8>' +
                  '<script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>' +
                  '<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>' +
+                 '<script>document.addEventListener("DOMContentLoaded", ' + checkboxHandling + ')</script>' +
                  '<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">' +
                  '<title></title>' +
                  '</head>' +
