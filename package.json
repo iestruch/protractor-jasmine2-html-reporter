@@ -1,6 +1,6 @@
 {
   "name": "protractor-html-hierarchical-reporter",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "description": "protractor jasmine hierarchical html reporter",
   "main": "index.js",
   "directories": {
