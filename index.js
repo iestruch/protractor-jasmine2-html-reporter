@@ -221,7 +221,11 @@ function HierarchicalHTMLReporter(options) {
         // if we have anything to write here, write out the consolidated file
         if (output) {
             var failuresClass = getFailureClass(allStats.failures);
+            var date = new Date();
+            var formatedDate = date.toLocaleDateString();
+
             output =
+                '<div style="text-align: right;"><p>Last Test:' + formatedDate + '</p></div>' +
                 '<h3>' + ' Tests: ' + allStats.tests + ' Skipped: ' + allStats.skipped + ' <span class="' +
                 failuresClass + '">Failures: ' + allStats.failures + '</span>' +
                 '<div style="float: right;">Show only failed tests<input type="checkbox" id="showOnlyFailed" name="showOnlyFailed" checked="' +
